@@ -1,3 +1,3 @@
 # Fictioneer Child Theme
 
-A blank child theme for Fictioneer.
+A blank WordPress child theme for [Fictioneer](https://github.com/Tetrakern/fictioneer/).
