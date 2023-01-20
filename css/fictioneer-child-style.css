@@ -1,0 +1,15 @@
+:root {
+  /* General and dark mode. */
+}
+
+:root[data-theme=default] {
+  /* Only applied if theme is selected. */
+}
+
+:root[data-mode=light] {
+  /* Only applied in light mode. */
+}
+
+:root[data-mode=light][data-theme=default] {
+  /* Only applied in light mode and if theme is selected. */
+}
