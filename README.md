@@ -49,13 +49,24 @@ Put the following custom CSS into your theme style file. Note that this example 
 
 ```css
 body {
-  /* Offsets the stickiness point of the navigation; might need breakpoints for mobile! */
-  --nav-observer-offset: 34px;
+  /* Offsets the stickiness point of the navigation on mobile! */
+  --nav-observer-offset: 49px;
+}
+
+@media only screen and (min-width: 1024px) {
+  body {
+    /* Offsets the stickiness point of the navigation on desktop! */
+    --nav-observer-offset: 49px;
+  }
+}
+
+.main-navigation {
+  margin-top: 0 !important; /* This is now covered by the new element! */
 }
 
 .child-navigation-identity {
   /* Just an example, you need to style this yourself! */
-  padding: 0 10px 10px 16px;
+  padding: 12px 10px 10px 16px;
   margin: 0 auto;
   max-width: var(--site-width);
 }
