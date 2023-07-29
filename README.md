@@ -8,6 +8,8 @@ Some common examples of customization that have come up in the past. If you want
 
 ### Limit the Blog shortcode to specific roles
 
+Put the following into your `functions.php`.
+
 ```php
 function child_limit_blog_shortcode_to_roles( $query_args ) {
   # Optional: Only apply the filter to a specific page, etc.
