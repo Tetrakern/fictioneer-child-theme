@@ -81,7 +81,7 @@ body {
 }
 ```
 
-You can hide the default logo or site title by just not adding any or disabling it. If you want to remove the default header (including the header image) completely, put the following is your `functions.php`.
+You can hide the default logo or site title by just not adding any or disabling it. If you want to remove the default header (including the header image) completely, put the following into your `functions.php`.
 
 ```php
 function fictioneer_child_remove_default_header() {
