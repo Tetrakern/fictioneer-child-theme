@@ -69,3 +69,50 @@ function fictioneer_child_remove_default_header() {
 }
 add_action( 'init', 'fictioneer_child_remove_default_header' );
 ```
+
+### Remove selected fields from the editor
+
+If you want to remove fields from the editor, perhaps to limit certain user roles, you need to hook into the internal [Advanced Custom Fields](https://www.advancedcustomfields.com/resources/) plugin. The field names can be acquired by inspecting the HTML of the editor; a few usual suspects are listed below. Note that this alone will not actually remove the fields, just prevent them from being rendered. Put this into your `functions.php`.
+
+* **field_619a91f85da9d:** Sticky in lists
+* **field_636d81d34cab1:** Custom Story CSS
+* **field_621b5610818d2:** Custom CSS
+* **field_60edba4ff33f8:** ePUB Custom CSS
+
+```php
+function child_remove_acf_items( $fields ) {
+  // Optional: Skip for administrators (or other roles)
+  if ( current_user_can( 'administrator' ) ) {
+    return $fields;
+  }
+
+  // Fields you want to remove
+  $field_keys = ['field_619a91f85da9d', 'field_636d81d34cab1', 'field_621b5610818d2', 'field_60edba4ff33f8'];
+
+  // Remove the fields from the fields array
+  foreach ( $fields as $key => &$field ) {
+    if ( in_array( $field['key'], $field_keys ) ) {
+      unset( $fields[$key] );
+    }
+  }
+
+  // Return modified fields array
+  return $fields;
+}
+add_filter( 'acf/pre_render_fields', 'child_remove_acf_items', 9999 );
+```
+
+If you want to remove the SEO meta box, use the following.
+
+```php
+function child_remove_seo_meta_box() {
+  // Optional: Skip for administrators (or other roles)
+  if ( current_user_can( 'administrator' ) ) {
+    return;
+  }
+
+  // Remove the meta box action
+  remove_action( 'add_meta_boxes', 'fictioneer_add_seo_metabox', 10 );
+}
+add_action( 'admin_init', 'child_remove_seo_meta_box' );
+```
