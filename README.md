@@ -50,13 +50,13 @@ Put the following custom CSS into your theme style file. Note that this example 
 ```css
 body {
   /* Offsets the stickiness point of the navigation on mobile! */
-  --nav-observer-offset: 49px;
+  --nav-observer-offset: 32px; /* Replace with mobile height of the new element! */
 }
 
 @media only screen and (min-width: 1024px) {
   body {
     /* Offsets the stickiness point of the navigation on desktop! */
-    --nav-observer-offset: 49px;
+    --nav-observer-offset: 64px; /* Replace with desktop height of the new element! */
   }
 }
 
@@ -64,11 +64,21 @@ body {
   margin-top: 0 !important; /* This is now covered by the new element! */
 }
 
+/* Mobile */
 .child-navigation-identity {
-  /* Just an example, you need to style this yourself! */
+  /* Adjust as needed! */
   padding: 12px 10px 10px 16px;
   margin: 0 auto;
   max-width: var(--site-width);
+  height: 32px;
+}
+
+/* Desktop */
+@media only screen and (min-width: 1024px) {
+  .child-navigation-identity {
+    /* Adjust as needed! */
+    height: 64px;
+  }
 }
 ```
 
