@@ -137,3 +137,93 @@ function child_remove_seo_meta_box() {
 }
 add_action( 'admin_init', 'child_remove_seo_meta_box' );
 ```
+
+### Tabula Rasa
+
+If you want to make sure users without administrator or moderator capabilities cannot see or access *anything*, put the following into your `functions.php`.
+
+```php
+function child_admin_screen_tabula_rasa() {
+  // Setup
+  $screen = get_current_screen();
+  $base = $screen->id;
+  $admin_menus = ['tools', 'export', 'import', 'site-health', 'export-personal-data', 'erase-personal-data', 'themes', 'customize', 'nav-menus', 'theme-editor', 'users', 'user-new', 'options-general'];
+
+  // Administration
+  if ( ! current_user_can( 'manage_options' ) && in_array( $base, $admin_menus ) ) {
+    wp_die( __( 'Access denied.', 'fictioneer' ) );
+  }
+
+  // Comments
+  if ( ! current_user_can( 'moderate_comments' ) && in_array( $base, ['edit-comments', 'comment'] ) ) {
+    wp_die( __( 'Access denied.', 'fictioneer' ) );
+  }
+}
+
+function child_admin_menu_tabula_rasa() {
+  // Administration
+  if ( ! current_user_can( 'manage_options' ) ) {
+    remove_menu_page( 'index.php' );
+    remove_menu_page( 'tools.php' );
+    remove_menu_page( 'plugins.php' );
+    remove_menu_page( 'themes.php' );
+  }
+
+  // Comments
+  if ( ! current_user_can( 'moderate_comments' ) ) {
+    remove_menu_page( 'edit-comments.php' );
+  }
+}
+
+function child_admin_dashboard_tabula_rasa() {
+  global $wp_meta_boxes;
+
+  // Administration
+  if ( ! current_user_can( 'manage_options' ) ) {
+    $wp_meta_boxes['dashboard']['normal']['core'] = [];
+    $wp_meta_boxes['dashboard']['side']['core'] = [];
+
+    remove_action( 'welcome_panel', 'wp_welcome_panel' );
+  }
+}
+
+function child_admin_bar_tabula_rasa() {
+  global $wp_admin_bar;
+
+  // Remove comments
+  if ( ! current_user_can( 'moderate_comments' ) ) {
+    $wp_admin_bar->remove_node( 'comments' );
+  }
+}
+
+function child_admin_upload_media_size_tabula_rasa( $bytes ) {
+  // Limit upload file size for non-administrators
+  if ( ! current_user_can( 'manage_options' ) ) {
+    return 1024 * 1024 * 5; // 5 MB
+  }
+}
+
+function child_admin_upload_media_type_tabula_rasa( $file ) {
+  // Setup
+  $filetype = wp_check_filetype( $file['name'] );
+  $mime_type = $filetype['type'];
+
+  // Limit upload file types for non-administrators
+  if ( ! current_user_can( 'manage_options' ) ) {
+    $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'application/pdf', 'image/svg+xml'];
+
+    if ( ! in_array( $mime_type, $allowed_types ) ){
+      $file['error'] = __( 'You are not allowed to upload files of this type.', 'fictioneer' );
+    }
+  }
+
+  return $file;
+}
+
+add_action( 'admin_menu', 'child_admin_menu_tabula_rasa', 9999 );
+add_action( 'current_screen', 'child_admin_screen_tabula_rasa', 9999 );
+add_action( 'wp_dashboard_setup', 'child_admin_dashboard_tabula_rasa', 9999 );
+add_action( 'admin_bar_menu', 'child_admin_bar_tabula_rasa', 9999 );
+add_filter( 'upload_size_limit', 'child_admin_upload_media_size_tabula_rasa', 9999 );
+add_filter( 'wp_handle_upload_prefilter', 'child_admin_upload_media_type_tabula_rasa', 9999 );
+```
