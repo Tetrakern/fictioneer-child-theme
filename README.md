@@ -140,7 +140,7 @@ add_action( 'admin_init', 'child_remove_seo_meta_box' );
 
 ### Tabula Rasa
 
-If you want to make sure users without administrator or moderator capabilities cannot see or access *anything*, put the following into your `functions.php`.
+While the theme already restricts non-administrator roles, you may want to go one step further and make absolutely sure that the admin panel does not expose sensitive data or functions. This will also account for custom roles added. Put the following into your `functions.php`.
 
 ```php
 function child_admin_screen_tabula_rasa() {
@@ -190,14 +190,14 @@ function child_admin_dashboard_tabula_rasa() {
 function child_admin_bar_tabula_rasa() {
   global $wp_admin_bar;
 
-  // Remove comments
+  // Comments
   if ( ! current_user_can( 'moderate_comments' ) ) {
     $wp_admin_bar->remove_node( 'comments' );
   }
 }
 
 function child_admin_upload_media_size_tabula_rasa( $bytes ) {
-  // Limit upload file size for non-administrators
+  // Maximum upload file size
   if ( ! current_user_can( 'manage_options' ) ) {
     return 1024 * 1024 * 5; // 5 MB
   }
@@ -208,7 +208,7 @@ function child_admin_upload_media_type_tabula_rasa( $file ) {
   $filetype = wp_check_filetype( $file['name'] );
   $mime_type = $filetype['type'];
 
-  // Limit upload file types for non-administrators
+  // Limit upload file types
   if ( ! current_user_can( 'manage_options' ) ) {
     $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'application/pdf', 'image/svg+xml'];
 
