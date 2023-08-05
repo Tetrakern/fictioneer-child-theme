@@ -140,7 +140,7 @@ add_action( 'admin_init', 'child_remove_seo_meta_box' );
 
 ### Tabula Rasa
 
-While the theme already restricts non-administrator roles, you may want to go one step further and make absolutely sure that the admin panel does not expose sensitive data or functions. This will also account for custom roles added. Put the following into your `functions.php`.
+While the theme already restricts non-administrator roles, you may want to go one step further and make doubly sure that the admin panel does not expose sensitive data or functions. This will also account for custom roles added. Put the following into your `functions.php`.
 
 ```php
 function child_admin_screen_tabula_rasa() {
