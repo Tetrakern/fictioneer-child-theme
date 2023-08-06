@@ -238,7 +238,7 @@ add_filter( 'wp_handle_upload_prefilter', 'child_admin_upload_media_type_tabula_
 
 If you are using a persistent object cache (Redis, Memecached, etc.), especially in combination with page caching, you may encounter some stale content. This can happen because Fictioneer’s posts are heavily intertwined — stories have chapters, chapters have a list of chapters in the same story, shortcodes show posts from the whole site, and so forth. If any part of that chain is not properly invalidated, page caches might be regenerated with outdated queries pulled from the object cache.
 
-This is not easily resolved, but the theme tries to make it work by going medieval on every associated post or shortcode it knows about. There is a small apocalypse happening every time you save a post. But it might not be enough, so here are some additional measures. Put them into your `functions.php`.
+This is not easily resolved, but the theme tries to make it work by going medieval on every associated post or shortcode it knows about. There is a small apocalypse happening every time you save a post. But it might not be enough, so here are some additional measures. This is fine for sites that are not updated minutely or faster. Put them into your `functions.php`.
 
 ```php
 function child_redis_me_this( $post_id ) {
