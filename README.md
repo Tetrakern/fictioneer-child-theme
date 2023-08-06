@@ -10,6 +10,7 @@ Some common examples of customization that have come up in the past. If you want
 * [Add site title or logo above main navigation](#add-site-title-or-logo-above-main-navigation)
 * [Remove selected fields from the editor](#remove-selected-fields-from-the-editor)
 * [Tabula Rasa](#tabula-rasa)
+* [Flush (Persistent) Object Caches](#flush-persistent-object-caches)
 
 ### Limit the Blog shortcode to specific roles
 
@@ -233,7 +234,7 @@ add_filter( 'upload_size_limit', 'child_admin_upload_media_size_tabula_rasa', 99
 add_filter( 'wp_handle_upload_prefilter', 'child_admin_upload_media_type_tabula_rasa', 9999 );
 ```
 
-### Purge (Persistent) Object Cache
+### Flush (Persistent) Object Caches
 
 If you are using a persistent object cache (Redis, Memecached, etc.), especially in combination with page caching, you may encounter some stale content. This can happen because Fictioneer’s posts are heavily intertwined — stories have chapters, chapters have a list of chapters in the same story, shortcodes show posts from the whole site, and so forth. If any part of that chain is not properly invalidated, page caches might be regenerated with outdated queries pulled from the object cache.
 
