@@ -6,6 +6,11 @@ A blank WordPress child theme for [Fictioneer](https://github.com/Tetrakern/fict
 
 Some common examples of customization that have come up in the past. If you want to know more, take a look at the [action](https://github.com/Tetrakern/fictioneer/blob/main/ACTIONS.md) and [filter](https://github.com/Tetrakern/fictioneer/blob/main/FILTERS.md) references in the main repository. You are expected to know the basics of CSS, HTML, and coding (PHP) or consult one of the many free tutorials on the matter just a quick Internet search away.
 
+* [Limit the Blog shortcode to specific roles](#limit-the-blog-shortcode-to-specific-roles)
+* [Add site title or logo above main navigation](#add-site-title-or-logo-above-main-navigation)
+* [Remove selected fields from the editor](#remove-selected-fields-from-the-editor)
+* [Tabula Rasa](#tabula-rasa)
+
 ### Limit the Blog shortcode to specific roles
 
 Put the following into your `functions.php`.
@@ -226,4 +231,37 @@ add_action( 'wp_dashboard_setup', 'child_admin_dashboard_tabula_rasa', 9999 );
 add_action( 'admin_bar_menu', 'child_admin_bar_tabula_rasa', 9999 );
 add_filter( 'upload_size_limit', 'child_admin_upload_media_size_tabula_rasa', 9999 );
 add_filter( 'wp_handle_upload_prefilter', 'child_admin_upload_media_type_tabula_rasa', 9999 );
+```
+
+### Purge (Persistent) Object Cache
+
+If you are using a persistent object cache (Redis, Memecached, etc.), especially in combination with page caching, you may encounter some stale content. This can happen because Fictioneer’s posts are heavily intertwined — stories have chapters, chapters have a list of chapters in the same story, shortcodes show posts from the whole site, and so forth. If any part of that chain is not properly invalidated, page caches might be regenerated with outdated queries pulled from the object cache.
+
+This is not easily resolved, but the theme tries to make it work by going medieval on every associated post or shortcode it knows about. There is a small apocalypse happening every time you save a post. But it might not be enough, so here are some additional measures. Put them into your `functions.php`.
+
+```php
+function child_redis_me_this( $post_id ) {
+  // Do not when...
+  if (
+    ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ||
+    wp_is_post_autosave( $post_id ) ||
+    wp_is_post_revision( $post_id ) ||
+    in_array( get_post_status( $post_id ), ['auto-draft'] )
+  ) {
+    return;
+  }
+
+  // Nuclear option
+  wp_cache_flush();
+}
+add_action( 'save_post', 'child_redis_me_this', 9 );
+add_action( 'untrash_post', 'child_redis_me_this', 9 );
+add_action( 'trashed_post', 'child_redis_me_this', 9 );
+add_action( 'delete_post', 'child_redis_me_this', 9 );
+```
+
+It might also help to disable the shortcode Transients. Put these constant definition at the top of your `functions.php`.
+
+```php
+define( 'FICTIONEER_SHORTCODE_TRANSIENT_EXPIRATION', -1 );
 ```
