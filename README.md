@@ -261,8 +261,7 @@ add_action( 'trashed_post', 'child_redis_me_this', 9 );
 add_action( 'delete_post', 'child_redis_me_this', 9 );
 ```
 
-It might also help to disable the shortcode Transients. Put these constant definition at the top of your `functions.php`.
-
+It might also help to disable the shortcode Transients. Put the following into your `functions.php`.
 ```php
 define( 'FICTIONEER_SHORTCODE_TRANSIENT_EXPIRATION', -1 );
 ```
