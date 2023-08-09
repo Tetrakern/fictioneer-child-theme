@@ -11,6 +11,7 @@ Some common examples of customization that have come up in the past. If you want
 * [Remove selected fields from the editor](#remove-selected-fields-from-the-editor)
 * [Tabula Rasa](#tabula-rasa)
 * [Flush (Persistent) Object Caches](#flush-persistent-object-caches)
+* [Restrict Page Templates](#restrict-page-templates)
 
 ### Limit the Blog shortcode to specific roles
 
@@ -105,6 +106,7 @@ If you want to remove fields from the editor, perhaps to limit certain user role
 * **field_636d81d34cab1:** Custom Story CSS
 * **field_621b5610818d2:** Custom CSS
 * **field_60edba4ff33f8:** ePUB Custom CSS
+* **field_60040fa3bc4f1:** Filter & Search ID
 
 ```php
 function child_remove_acf_items( $fields ) {
@@ -114,7 +116,7 @@ function child_remove_acf_items( $fields ) {
   }
 
   // Fields you want to remove
-  $field_keys = ['field_619a91f85da9d', 'field_636d81d34cab1', 'field_621b5610818d2', 'field_60edba4ff33f8'];
+  $field_keys = ['field_619a91f85da9d', 'field_636d81d34cab1', 'field_621b5610818d2', 'field_60edba4ff33f8', 'field_60040fa3bc4f1'];
 
   // Remove the fields from the fields array
   foreach ( $fields as $key => &$field ) {
