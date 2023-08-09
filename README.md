@@ -236,7 +236,7 @@ add_filter( 'wp_handle_upload_prefilter', 'child_admin_upload_media_type_tabula_
 
 ### Flush (Persistent) Object Caches
 
-If you are using a persistent object cache (Redis, Memecached, etc.), especially in combination with page caching, you may encounter some stale content. This can happen because Fictioneer’s posts are heavily intertwined — stories have chapters, chapters have a list of chapters in the same story, shortcodes show posts from the whole site, and so forth. If any part of that chain is not properly invalidated, page caches might be regenerated with outdated queries pulled from the object cache.
+If you are using a persistent object cache (Redis, Memcached, etc.), especially in combination with page caching, you may encounter some stale content. This can happen because Fictioneer’s posts are heavily intertwined — stories have chapters, chapters have a list of chapters in the same story, shortcodes show posts from the whole site, and so forth. If any part of that chain is not properly invalidated, page caches might be regenerated with outdated queries pulled from the object cache.
 
 This is not easily resolved, but the theme tries to make it work by going medieval on every associated post or shortcode it knows about. There is a small apocalypse happening every time you save a post. But it might not be enough, so here are some additional measures. This is fine for sites that are not updated minutely or faster. Put the following into your `functions.php`.
 
@@ -264,4 +264,59 @@ add_action( 'delete_post', 'child_redis_me_this', 9 );
 It might also help to disable the shortcode Transients. Put the following into your `functions.php`.
 ```php
 define( 'FICTIONEER_SHORTCODE_TRANSIENT_EXPIRATION', -1 );
+```
+
+### Restrict Page Templates
+
+If you want to prevent non-administrators from assigning custom page templates, put the following into your `functions.php`. You can allow certain templates by adding their names (as `'name.php' => true`) to the constant.
+
+```php
+// Add templates ('name' => true) to the array you want to allow,
+// otherwise leave empty to disable the template dropdown.
+define( 'CHILD_ALLOWED_PAGE_TEMPLATES', [] );
+
+/**
+ * Filters the page template selection for non-administrators
+ *
+ * @param array $templates  Array of templates ('name' => true).
+ *
+ * @return array Array of allowed templates.
+ */
+
+function child_restrict_page_templates( $templates ) {
+  // Filter selection for all non-administrators...
+  if ( ! current_user_can( 'manage_options' ) ) {
+    return array_intersect_key( $templates, CHILD_ALLOWED_PAGE_TEMPLATES );
+  }
+
+  // ... otherwise change nothing
+  return $templates;
+}
+add_filter( 'theme_page_templates', 'child_restrict_page_templates' );
+
+
+/**
+ * Makes sure only allowed templates are selected
+ *
+ * @param int $post_id  ID of the saved post.
+ */
+
+function child_enforce_restricted_page_templates( $post_id ) {
+  // Do nothing if...
+  if (
+    current_user_can( 'manage_options' ) ||
+    get_post_type( $post_id ) !== 'page'
+  ) {
+    return;
+  }
+
+  // Get currently selected template
+  $selected_template = get_post_meta( $post_id, '_wp_page_template', true );
+
+  // Remove if not allowed
+  if ( ! in_array( $selected_template, CHILD_ALLOWED_PAGE_TEMPLATES ) ) {
+    update_post_meta( $post_id, '_wp_page_template', '' );
+  }
+}
+add_action( 'save_post', 'child_enforce_restricted_page_templates' );
 ```
