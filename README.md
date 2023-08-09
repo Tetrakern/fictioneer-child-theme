@@ -204,6 +204,29 @@ function child_admin_bar_tabula_rasa() {
   }
 }
 
+function child_admin_bar_dashboard_tabula_rasa() {
+  global $wp_admin_bar;
+
+  if ( ! current_user_can( 'manage_options' ) ) {
+    // Dashboard dropdown link
+    $wp_admin_bar->remove_menu( 'dashboard' );
+  }
+}
+
+function child_admin_landing_page_tabula_rasa() {
+  global $pagenow;
+
+  if (
+    $pagenow == 'index.php' &&
+    ! current_user_can( 'manage_options' ) &&
+    ! ( defined( 'DOING_AJAX' ) && DOING_AJAX )
+  ) {
+    // Skip dashboard, go to user profile
+    wp_redirect( home_url( '/wp-admin/profile.php' ) );
+    exit;
+  }
+}
+
 function child_admin_upload_media_size_tabula_rasa( $bytes ) {
   // Maximum upload file size
   if ( ! current_user_can( 'manage_options' ) ) {
@@ -232,6 +255,8 @@ add_action( 'admin_menu', 'child_admin_menu_tabula_rasa', 9999 );
 add_action( 'current_screen', 'child_admin_screen_tabula_rasa', 9999 );
 add_action( 'wp_dashboard_setup', 'child_admin_dashboard_tabula_rasa', 9999 );
 add_action( 'admin_bar_menu', 'child_admin_bar_tabula_rasa', 9999 );
+add_action( 'wp_before_admin_bar_render', 'child_admin_bar_dashboard_tabula_rasa', 9999 );
+add_action( 'admin_init', 'child_admin_landing_page_tabula_rasa', 9999 );
 add_filter( 'upload_size_limit', 'child_admin_upload_media_size_tabula_rasa', 9999 );
 add_filter( 'wp_handle_upload_prefilter', 'child_admin_upload_media_type_tabula_rasa', 9999 );
 ```
